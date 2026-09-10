@@ -1,0 +1,110 @@
+import requests
+username=input("Please enter your leetcode Username: ")
+
+query = """
+query($username:String!){
+  matchedUser(username:$username){
+    username
+    profile{
+      ranking
+      reputation
+    }
+    submitStatsGlobal{
+      
+      acSubmissionNum {
+        difficulty
+        count
+        submissions
+      }
+      totalSubmissionNum { 
+      difficulty 
+      count 
+      submissions 
+      } 
+    }
+  }
+}
+"""
+
+session = requests.Session()
+try:
+  session.get(  
+    "https://leetcode.com/",
+    headers={
+        "Referer": "https://leetcode.com/"
+    },verify=False
+  )
+  r = session.post(
+    "https://leetcode.com/graphql",
+    headers={
+        "Referer": "https://leetcode.com/",
+        "Origin": "https://leetcode.com/",
+        "Content-Type": "application/json"
+    },
+    json={"query": query,"variables":{"username":username}},verify=False
+  )
+except requests.exceptions.RequestException:
+  print("Could not connect to leetcode")
+  exit()
+
+
+data=r.json()
+def get_submissions(data, difficulty, kind):
+    for item in data['data']['matchedUser']['submitStatsGlobal'][kind]:
+        if item['difficulty'] == difficulty:
+            return item['submissions']
+    return 0
+
+
+def acceptance_rate(accepted, total):
+    if total == 0:
+        return 0
+    return round((accepted / total) * 100)
+
+
+print(f"Stats for {username}:")
+for diff in ["Easy", "Medium", "Hard"]:
+    ac = get_submissions(data, diff, "acSubmissionNum")
+    total = get_submissions(data, diff, "totalSubmissionNum")
+    rate = acceptance_rate(ac, total)
+    print(f"  {diff}: {rate}% ({ac}/{total})")
+
+
+###----finding values----##
+easy=0
+medium=0
+hard=0
+for item in data['data']['matchedUser']['submitStatsGlobal']['acSubmissionNum']:
+  if(item['difficulty']=="All"):
+    continue
+  if(item['difficulty']=="Easy"):
+    easy=item['count']
+  elif(item['difficulty']=="Medium"):
+    medium=item['count']
+  elif(item['difficulty']=="Hard"):
+    hard=item['count']  
+total=easy+medium+hard
+easy_percent=round((easy/total)*100,2)
+medium_percent=round((medium/total)*100,2)
+hard_percent=round((hard/total)*100,2)
+scores = {"easy": easy, "medium": medium, "hard": hard}
+weakest = min(scores, key=scores.get)
+ranking=data['data']['matchedUser']['profile']['ranking']
+
+
+
+###----OUTPUT----###
+print("="*30)
+print(" "*5,"LEETCODE ANALYZER"," "*5)
+print("="*30)
+print(" ")
+print("Username: {}".format(username))
+print("Ranking: {}".format(ranking))
+print(" ")
+print("PROBLEMS SOLVED")
+print(f"Easy: {easy}")
+print(f"Medium: {medium}")
+print(f"Hard: {hard}")
+print(f"Total: {total}")
+print(" ")
+print(f"Weakest Difficulty : {weakest}")
