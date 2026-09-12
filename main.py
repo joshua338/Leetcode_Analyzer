@@ -1,0 +1,303 @@
+import requests
+import geminiex
+username = input("Please enter your leetcode Username: ")
+limit = 20
+profile_query = """
+query($username:String!,$limit:Int!){
+  matchedUser(username:$username){
+    username
+    profile{
+      ranking
+      reputation
+    }
+    
+    contributions {
+      points
+    }
+    
+    submitStatsGlobal{
+      acSubmissionNum {
+        difficulty
+        count
+        submissions
+      }
+      totalSubmissionNum {
+        difficulty
+        count
+        submissions
+      }
+    }
+  }
+  recentAcSubmissionList(username:$username,limit:$limit){
+    id
+    title
+    titleSlug
+    timestamp
+  }
+  
+}
+"""
+problem_query = """
+query($titleSlug:String!){
+  question(titleSlug:$titleSlug){
+    title
+    topicTags{
+      name
+    }
+  }
+}
+"""
+session = requests.Session()
+try:
+    session.get(
+        "https://leetcode.com/",
+        headers={
+            "Referer": "https://leetcode.com/"
+        },
+        verify=False
+    )
+
+    r = session.post(
+        "https://leetcode.com/graphql",
+        headers={
+            "Referer": "https://leetcode.com/",
+            "Origin": "https://leetcode.com/",
+            "Content-Type": "application/json"
+        },
+        json={
+            "query": profile_query,
+            "variables": {
+                "username": username,
+                "limit": limit
+            }
+        },
+        verify=False
+    )
+
+except requests.exceptions.RequestException:
+    print("Could not connect to leetcode")
+    exit()
+
+data = r.json()
+print(data['data']['matchedUser']['contributions']['points'])
+def get_submissions(data, difficulty, kind):
+    for item in data['data']['matchedUser']['submitStatsGlobal'][kind]:
+        if item['difficulty'] == difficulty:
+            return item['submissions']
+    return 0
+
+
+def acceptance_rate(accepted, total):
+    if total == 0:
+        return 0
+    return round((accepted / total) * 100)
+
+
+# print(f"Stats for {username}:")
+
+# for diff in ["Easy", "Medium", "Hard"]:
+#     ac = get_submissions(data, diff, "acSubmissionNum")
+#     total = get_submissions(data, diff, "totalSubmissionNum")
+#     rate = acceptance_rate(ac, total)
+#     print(f"  {diff}: {rate}% ({ac}/{total})")
+
+
+#---- FINDING VALUES ----#
+
+easy = 0
+medium = 0
+hard = 0
+
+for item in data['data']['matchedUser']['submitStatsGlobal']['acSubmissionNum']:
+    if item['difficulty'] == "All":
+        continue
+
+    if item['difficulty'] == "Easy":
+        easy = item['count']
+    elif item['difficulty'] == "Medium":
+        medium = item['count']
+    elif item['difficulty'] == "Hard":
+        hard = item['count']
+
+total = easy + medium + hard
+
+easy_percent = round((easy / total) * 100, 2)
+medium_percent = round((medium / total) * 100, 2)
+hard_percent = round((hard / total) * 100, 2)
+
+scores = {
+    "easy": easy,
+    "medium": medium,
+    "hard": hard
+}
+
+weak_diff = min(scores, key=scores.get)
+ranking = data['data']['matchedUser']['profile']['ranking']
+reputation=data['data']['matchedUser']['profile']['reputation']
+points=data['data']['matchedUser']['contributions']['points']
+
+#---- OUTPUT ----#
+
+# print("=" * 30)
+# print(" " * 5, "LEETCODE ANALYZER", " " * 5)
+# print("=" * 30)
+# print()
+
+# print("Username: {}".format(username))
+# print("Ranking: {}".format(ranking))
+# print("Reputation: {}".format(reputation))
+#print("Contribution Points: {}".format(points))
+
+# print()
+
+# print("PROBLEMS SOLVED")
+# print(f"Easy: {easy}")
+# print(f"Medium: {medium}")
+# print(f"Hard: {hard}")
+# print(f"Total: {total}")
+# print()
+# print(f"Weakest Difficulty : {weak_diff}")
+titleSlug=[]
+for item in data['data']['recentAcSubmissionList']:
+  slug=item['titleSlug']
+  titleSlug.append(slug)
+topics_name=[]
+for slug in titleSlug:
+  try:
+    r2 = session.post(
+          "https://leetcode.com/graphql",
+          headers={
+              "Referer": "https://leetcode.com/",
+              "Origin": "https://leetcode.com/",
+              "Content-Type": "application/json"
+          },
+          json={
+              "query": problem_query,
+              "variables":{
+                  "titleSlug":slug
+              }
+          },
+          verify=False
+      )
+  except requests.exceptions.RequestException:
+    print("Could not find.")
+    exit()
+  data2=r2.json()
+  for item in data2['data']['question']['topicTags']:
+    topics_name.append(item['name'])
+
+
+# print(topics_name)
+
+# for item in data2['data']['question']['topicTags']:
+#   print(item['name'])
+topic_dict={}
+for item in topics_name:
+  if item in topic_dict:
+    topic_dict[item]+=1
+  else:
+    topic_dict[item]=1
+# print(topic_dict) 
+
+    
+###for printing the topic and the number of times it has been practiced###
+# for key in topic_dict:
+#   print("{} : {}".format(key,topic_dict[key])
+
+
+###for printing the least and most practiced topic###
+# least_practiced_topic=min(topic_dict,key=topic_dict.get) 
+# most_practied_topic=max(topic_dict,key=topic_dict.get)
+# print("Your least practiced topic is {}".format(least_practiced_topic))
+# print("Your most practiced topic is {}".format(most_practied_topic))
+
+
+#percentage = topic_count / total_count × 100,for calcualting the percentage of the topics practicsed
+# def calculate_percentage(count, total):
+#   if total==0:
+#     return 0
+#   return round((count / total) * 100, 2)
+
+# total_count=sum(topic_dict.values())
+
+###topics solved and their percentage of the total topics solved
+# print(" "*5,"TOPIC PRACTICE ANALYSIS"," "*5)
+# print("-"*20)
+# for item, count in sorted(topic_dict.items(), key=lambda topic: topic[1], reverse=True):
+#   calculated_percentage = calculate_percentage(count, total_count)
+#   print("{} : {} ({}%)".format(item, count, calculated_percentage))
+
+#PROFILE#
+# ...
+# print("=" * 30)
+# print(" " * 5, "LEETCODE ANALYZER", " " * 5)
+# print("=" * 30)
+# print()
+
+# print("Username: {}".format(username))
+# print("Ranking: {}".format(ranking))
+# print("Reputation: {}".format(reputation))
+# print("Contribution Points: {}".format(points))
+
+# print()
+# # DIFFICULTY ANALYSIS#
+# # ...#
+# print("DIFFICULTY ANALYSIS")
+# easy_count = medium_count = hard_count = 0
+# easy_attempts = medium_attempts = hard_attempts = 0
+
+# for item in data['data']['matchedUser']['submitStatsGlobal']['acSubmissionNum']:
+#     if item['difficulty'] == 'Easy':
+#         easy_count = item['count']
+#         easy_attempts = item['submissions']
+
+#     elif item['difficulty'] == 'Medium':
+#         medium_count = item['count']
+#         medium_attempts = item['submissions']
+
+#     elif item['difficulty'] == 'Hard':
+#         hard_count = item['count']
+#         hard_attempts = item['submissions']
+
+# print(f"Easy: {easy_count} solved | {easy_attempts} attempts | {round((easy_count/easy_attempts)*100,2)}% acceptance rate")
+# print(f"Medium: {medium_count} solved | {medium_attempts} attempts | {round((medium_count/medium_attempts)*100,2)}% acceptance rate")
+# print(f"Hard: {hard_count} solved | {hard_attempts} attempts | {round((hard_count/hard_attempts)*100,2)}% acceptance rate")
+
+
+# # TOPIC PRACTICE ANALYSIS#
+# # ...##
+# def calculate_percentage(count, total):
+#   if total==0:
+#     return 0
+#   return round((count / total) * 100, 2)
+
+# total_count=sum(topic_dict.values())
+
+# print(" "*5,"TOPIC PRACTICE ANALYSIS"," "*5)
+# print("-"*20)
+# for item, count in sorted(topic_dict.items(), key=lambda topic: topic[1], reverse=True):
+#   calculated_percentage = calculate_percentage(count, total_count)
+#   print("{} : {} ({}%)".format(item, count, calculated_percentage))
+
+
+# topic_mapping = {
+#     "Arrays": "Array",
+#     "Hash Tables": "Hash Table",
+#     "Linked Lists": "Linked List"
+# }
+
+###mapping the topics from leetcode to the topics in gemini and finding the matching topics##
+matching_list=[]
+for item in geminiex.topics_listed:
+  if item in topic_dict:
+    matching_list.append(item)
+
+topic_set_nodupes=set(topics_name)
+# print("Your topics practiced are: {}".format(topic_set_nodupes))
+
+for item in geminiex.topics_listed:
+  if item in topic_dict:
+    print("You have practiced {} questions on {}".format(topic_dict[item],item))
+  else:
+    print("You have not practiced any questions on {}".format(item))
+print("Your practiced percentage is {}".format(round((len(matching_list)/len(geminiex.topics_listed))*100,2)))

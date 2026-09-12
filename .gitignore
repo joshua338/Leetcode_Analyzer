@@ -1,0 +1,16 @@
+# Environment variables / secrets
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Temporary files
+tempCodeRunnerFile.py
+
+# Generated output
+response.txt
+
+# Virtual environment (if you create one)
+venv/
+.venv/

@@ -1,0 +1,22 @@
+Given the job description, extract the DSA and technical topics relevant for LeetCode preparation.
+
+Return ONLY valid raw JSON.
+Select topics only from the provided LeetCode topic list. Use the exact topic names from the list. Do not create, rename, pluralize, or invent topics.
+The response must:
+- Start with {
+- End with }
+- Contain a "topics" array
+- NOT contain Markdown code fences
+- NOT contain ```json
+- NOT contain ```
+- NOT contain explanations or any other text
+
+Example of the required format:
+
+{
+  "topics": [
+    "Arrays",
+    "Hash Tables",
+    "Dynamic Programming"
+  ]
+}
