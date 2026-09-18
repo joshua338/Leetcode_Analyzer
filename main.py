@@ -1,5 +1,6 @@
 import requests
 import geminiex
+import json
 username = input("Please enter your leetcode Username: ")
 limit = 20
 profile_query = """
@@ -121,9 +122,12 @@ for item in data['data']['matchedUser']['submitStatsGlobal']['acSubmissionNum']:
 
 total = easy + medium + hard
 
-easy_percent = round((easy / total) * 100, 2)
-medium_percent = round((medium / total) * 100, 2)
-hard_percent = round((hard / total) * 100, 2)
+try:
+  easy_percent = round((easy / total) * 100, 2)
+  medium_percent = round((medium / total) * 100, 2)
+  hard_percent = round((hard / total) * 100, 2)
+except ZeroDivisionError:
+  print("Error: Division by zero occurred while calculating percentages.")
 
 scores = {
     "easy": easy,
@@ -227,8 +231,8 @@ for item in topics_name:
 #   calculated_percentage = calculate_percentage(count, total_count)
 #   print("{} : {} ({}%)".format(item, count, calculated_percentage))
 
-#PROFILE#
-# ...
+# PROFILE#
+...
 # print("=" * 30)
 # print(" " * 5, "LEETCODE ANALYZER", " " * 5)
 # print("=" * 30)
@@ -245,8 +249,8 @@ for item in topics_name:
 # print("DIFFICULTY ANALYSIS")
 # easy_count = medium_count = hard_count = 0
 # easy_attempts = medium_attempts = hard_attempts = 0
-
-# for item in data['data']['matchedUser']['submitStatsGlobal']['acSubmissionNum']:
+# try:
+#   for item in data['data']['matchedUser']['submitStatsGlobal']['acSubmissionNum']:
 #     if item['difficulty'] == 'Easy':
 #         easy_count = item['count']
 #         easy_attempts = item['submissions']
@@ -259,13 +263,14 @@ for item in topics_name:
 #         hard_count = item['count']
 #         hard_attempts = item['submissions']
 
-# print(f"Easy: {easy_count} solved | {easy_attempts} attempts | {round((easy_count/easy_attempts)*100,2)}% acceptance rate")
-# print(f"Medium: {medium_count} solved | {medium_attempts} attempts | {round((medium_count/medium_attempts)*100,2)}% acceptance rate")
-# print(f"Hard: {hard_count} solved | {hard_attempts} attempts | {round((hard_count/hard_attempts)*100,2)}% acceptance rate")
+#   print(f"Easy: {easy_count} solved | {easy_attempts} attempts | {round((easy_count/easy_attempts)*100,2)}% acceptance rate")
+#   print(f"Medium: {medium_count} solved | {medium_attempts} attempts | {round((medium_count/medium_attempts)*100,2)}% acceptance rate")
+#   print(f"Hard: {hard_count} solved | {hard_attempts} attempts | {round((hard_count/hard_attempts)*100,2)}% acceptance rate")
+# except ZeroDivisionError:
+#   print("Error: Division by zero occurred while calculating acceptance rates.")
 
-
-# # TOPIC PRACTICE ANALYSIS#
-# # ...##
+# TOPIC PRACTICE ANALYSIS#
+# ...##
 # def calculate_percentage(count, total):
 #   if total==0:
 #     return 0
@@ -287,17 +292,28 @@ for item in topics_name:
 # }
 
 ###mapping the topics from leetcode to the topics in gemini and finding the matching topics##
-matching_list=[]
-for item in geminiex.topics_listed:
-  if item in topic_dict:
-    matching_list.append(item)
-
-topic_set_nodupes=set(topics_name)
-# print("Your topics practiced are: {}".format(topic_set_nodupes))
+matching_list = []
 
 for item in geminiex.topics_listed:
-  if item in topic_dict:
-    print("You have practiced {} questions on {}".format(topic_dict[item],item))
-  else:
-    print("You have not practiced any questions on {}".format(item))
-print("Your practiced percentage is {}".format(round((len(matching_list)/len(geminiex.topics_listed))*100,2)))
+    if item in topic_dict:
+        matching_list.append(item)
+
+topic_set_nodupes = set(topics_name)
+
+required_topics = list(set(geminiex.topics_listed))
+geminiex.generate_questions(required_topics)
+
+# Read the generated questions
+with open("questions.json", "r") as f:
+    data = json.loads(f.read())
+
+# print(data.keys())
+for item in required_topics:
+    if item in data:
+        for i in range(len(data[item])):
+          print(
+                f"{data[item][i]['interview question']}: "
+                f"{data[item][i]['LeetCode problem number']}"
+            )
+
+

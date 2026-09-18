@@ -1,0 +1,142 @@
+{
+  "String": [
+    {
+      "interview question": "Longest Substring Without Repeating Characters",
+      "LeetCode problem number": 3
+    },
+    {
+      "interview question": "Valid Parentheses",
+      "LeetCode problem number": 20
+    },
+    {
+      "interview question": "Longest Palindromic Substring",
+      "LeetCode problem number": 5
+    }
+  ],
+  "Binary Search": [
+    {
+      "interview question": "Binary Search",
+      "LeetCode problem number": 704
+    },
+    {
+      "interview question": "Search in Rotated Sorted Array",
+      "LeetCode problem number": 33
+    },
+    {
+      "interview question": "Find First and Last Position of Element in Sorted Array",
+      "LeetCode problem number": 34
+    }
+  ],
+  "Array": [
+    {
+      "interview question": "Two Sum",
+      "LeetCode problem number": 1
+    },
+    {
+      "interview question": "Maximum Subarray",
+      "LeetCode problem number": 53
+    },
+    {
+      "interview question": "Contains Duplicate",
+      "LeetCode problem number": 217
+    }
+  ],
+  "Dynamic Programming": [
+    {
+      "interview question": "Climbing Stairs",
+      "LeetCode problem number": 70
+    },
+    {
+      "interview question": "Coin Change",
+      "LeetCode problem number": 322
+    },
+    {
+      "interview question": "Longest Increasing Subsequence",
+      "LeetCode problem number": 300
+    }
+  ],
+  "Greedy": [
+    {
+      "interview question": "Jump Game",
+      "LeetCode problem number": 55
+    },
+    {
+      "interview question": "Best Time to Buy and Sell Stock II",
+      "LeetCode problem number": 122
+    },
+    {
+      "interview question": "Partition Labels",
+      "LeetCode problem number": 763
+    }
+  ],
+  "Hash Table": [
+    {
+      "interview question": "Two Sum",
+      "LeetCode problem number": 1
+    },
+    {
+      "interview question": "Group Anagrams",
+      "LeetCode problem number": 49
+    },
+    {
+      "interview question": "Valid Anagram",
+      "LeetCode problem number": 242
+    }
+  ],
+  "Tree": [
+    {
+      "interview question": "Maximum Depth of Binary Tree",
+      "LeetCode problem number": 104
+    },
+    {
+      "interview question": "Validate Binary Search Tree",
+      "LeetCode problem number": 98
+    },
+    {
+      "interview question": "Binary Tree Level Order Traversal",
+      "LeetCode problem number": 102
+    }
+  ],
+  "Two Pointers": [
+    {
+      "interview question": "Valid Palindrome",
+      "LeetCode problem number": 125
+    },
+    {
+      "interview question": "3Sum",
+      "LeetCode problem number": 15
+    },
+    {
+      "interview question": "Container With Most Water",
+      "LeetCode problem number": 11
+    }
+  ],
+  "Sorting": [
+    {
+      "interview question": "Merge Intervals",
+      "LeetCode problem number": 56
+    },
+    {
+      "interview question": "Sort Colors",
+      "LeetCode problem number": 75
+    },
+    {
+      "interview question": "Kth Largest Element in an Array",
+      "LeetCode problem number": 215
+    }
+  ],
+  "Graph": [
+    {
+      "interview question": "Clone Graph",
+      "LeetCode problem number": 133
+    },
+    {
+      "interview question": "Course Schedule",
+      "LeetCode problem number": 207
+    },
+    {
+      "interview question": "Number of Islands",
+      "LeetCode problem number": 200
+    }
+  ]
+}
